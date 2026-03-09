@@ -3,12 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>产品匹配官-老宁</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO优化 -->
+    <title>产品匹配官-老宁 | 智能贷款产品推荐助手</title>
+    <meta name="description" content="我是老宁，专业的产品匹配官，根据您的个人情况为您推荐合适的银行贷款产品。支持工薪族、企业主、自由职业者等多种职业类型。">
+    <meta name="keywords" content="贷款产品推荐,银行贷款,产品匹配,工薪族贷款,企业主贷款,老宁">
+    <meta name="author" content="老宁">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://abcdengw.github.io/loan-matcher-mobile/">
+    <meta property="og:title" content="产品匹配官-老宁 | 智能贷款产品推荐">
+    <meta property="og:description" content="根据您的个人情况为您推荐合适的银行贷款产品">
+    <meta property="og:image" content="https://abcdengw.github.io/loan-matcher-mobile/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://abcdengw.github.io/loan-matcher-mobile/">
+    <meta property="twitter:title" content="产品匹配官-老宁 | 智能贷款产品推荐">
+    <meta property="twitter:description" content="根据您的个人情况为您推荐合适的银行贷款产品">
+    <meta property="twitter:image" content="https://abcdengw.github.io/loan-matcher-mobile/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <!-- PWA -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="产品匹配官">
+    
+    <!-- CSS -->
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -18,8 +53,57 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
+        /* 页面加载动画 */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        #page-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* 顶部标题栏 */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -27,12 +111,20 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             flex-shrink: 0;
             z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-content {
+            flex: 1;
         }
 
         .header h1 {
             font-size: 18px;
             font-weight: 600;
             text-align: center;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         .header .subtitle {
@@ -42,23 +134,50 @@
             margin-top: 5px;
         }
 
+        .new-chat-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .new-chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(180deg);
+        }
+
+        .new-chat-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 聊天消息区域 */
         .chat-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px 15px;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
 
+        /* 消息气泡样式 */
         .message {
             display: flex;
             margin-bottom: 15px;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -83,6 +202,7 @@
             justify-content: center;
             font-size: 18px;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .user .avatar {
@@ -102,6 +222,7 @@
             font-size: 14px;
             line-height: 1.6;
             word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .user .message-bubble {
@@ -114,9 +235,9 @@
             background: white;
             color: #333;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
+        /* 输入区域 */
         .input-container {
             background: white;
             padding: 12px 15px;
@@ -133,7 +254,7 @@
             border-radius: 20px;
             padding: 8px 15px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
         #messageInput {
@@ -147,6 +268,22 @@
             min-height: 36px;
             padding: 4px 0;
             line-height: 1.5;
+            font-family: inherit;
+        }
+
+        .char-count {
+            font-size: 10px;
+            color: #999;
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        .char-count.warning {
+            color: #f39c12;
+        }
+
+        .char-count.error {
+            color: #e74c3c;
         }
 
         #sendButton {
@@ -157,12 +294,14 @@
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: all 0.2s;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         #sendButton:hover {
             transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         #sendButton:active {
@@ -175,6 +314,7 @@
             transform: none;
         }
 
+        /* 加载动画 */
         .typing-indicator {
             display: flex;
             gap: 4px;
@@ -208,6 +348,7 @@
             }
         }
 
+        /* 快捷提问按钮 */
         .quick-questions {
             display: flex;
             flex-wrap: wrap;
@@ -224,21 +365,30 @@
             color: #666;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .quick-question:hover {
             background: #667eea;
             color: white;
             border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
+        .quick-question:active {
+            transform: translateY(0);
+        }
+
+        /* 错误提示 */
         .error-message {
             background: #fee;
             color: #c33;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 12px;
             margin-bottom: 15px;
             font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             animation: shake 0.5s;
         }
 
@@ -248,6 +398,53 @@
             75% { transform: translateX(5px); }
         }
 
+        .retry-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .retry-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .disclaimer {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .contact {
+            color: #999;
+        }
+
+        /* 滚动条美化 */
         .chat-container::-webkit-scrollbar {
             width: 4px;
         }
@@ -260,35 +457,62 @@
             background: rgba(102, 126, 234, 0.3);
             border-radius: 2px;
         }
+
+        /* 网络状态提示 */
+        .network-status {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+            animation: fadeInOut 3s ease;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+
+        .network-status.online {
+            background: rgba(46, 204, 113, 0.9);
+        }
+
+        .network-status.offline {
+            background: rgba(231, 76, 60, 0.9);
+        }
     </style>
 </head>
 <body>
+    <!-- 页面加载动画 -->
+    <div id="page-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">老宁正在加载...</div>
+    </div>
+
+    <!-- 网络状态提示 -->
+    <div id="networkStatus" class="network-status"></div>
+
+    <!-- 顶部标题栏 -->
     <div class="header">
-        <h1>💼 产品匹配官</h1>
-        <div class="subtitle">我是老宁，帮你找到合适的贷款产品</div>
+        <button class="new-chat-btn" onclick="startNewChat()" title="新对话">🔄</button>
+        <div class="header-content">
+            <h1>💼 产品匹配官</h1>
+            <div class="subtitle">我是老宁，帮你找到合适的贷款产品</div>
+        </div>
     </div>
 
+    <!-- 聊天消息区域 -->
     <div class="chat-container" id="chatContainer">
-        <div class="message assistant">
-            <div class="avatar">👨‍💼</div>
-            <div class="message-bubble">
-                你好！我是老宁 🎯<br><br>
-                我来帮你匹配合适的银行贷款产品。你可以告诉我你的情况，比如：<br><br>
-                • 你是工薪族、企业主还是自由职业者？<br>
-                • 年龄多少？<br>
-                • 收入或年流水情况？<br>
-                • 负债情况如何？<br><br>
-                我会根据你的信息为你推荐最合适的产品！
-            </div>
-        </div>
-
-        <div class="quick-questions">
-            <button class="quick-question" onclick="sendQuickQuestion('我是个工薪族，35岁，月薪1.5万，公积金基数1.2万，帮我匹配产品')">工薪族匹配</button>
-            <button class="quick-question" onclick="sendQuickQuestion('我是个企业主，35岁，年流水300万，有实际经营场所，帮我匹配产品')">企业主匹配</button>
-            <button class="quick-question" onclick="sendQuickQuestion('我是自由职业者，年收入50万，有房有车，帮我匹配产品')">自由职业匹配</button>
-        </div>
+        <!-- 欢迎消息将通过JavaScript动态添加 -->
     </div>
 
+    <!-- 输入区域 -->
     <div class="input-container">
         <div class="input-wrapper">
             <textarea
@@ -296,26 +520,85 @@
                 placeholder="输入你的情况..."
                 rows="1"
                 onkeydown="handleKeyDown(event)"
+                oninput="updateCharCount()"
             ></textarea>
+            <div class="char-count" id="charCount">0/500</div>
         </div>
         <button id="sendButton" onclick="sendMessage()">发送</button>
     </div>
 
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="disclaimer">
+            <strong>免责声明：</strong>本服务提供的贷款产品信息仅供参考，具体额度、利率以银行实际审批结果为准。本服务不承诺任何贷款获批结果。
+        </div>
+        <div class="contact">
+            使用说明 | <a href="#" onclick="showUsage()">如何使用</a> | 有问题请联系客服
+        </div>
+    </div>
+
     <script>
+        // API配置
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
         const API_URL_STREAM = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/stream_run';
 
         let isTyping = false;
+        let retryCount = 0;
+        const MAX_RETRY = 3;
 
+        // 会话管理 - 生成或获取session_id
+        let sessionId = localStorage.getItem('chat_session_id');
+        if (!sessionId) {
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('chat_session_id', sessionId);
+        }
+
+        // 聊天容器
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const charCount = document.getElementById('charCount');
+        const pageLoader = document.getElementById('page-loader');
 
+        // 网络状态检测
+        window.addEventListener('online', () => showNetworkStatus('online'));
+        window.addEventListener('offline', () => showNetworkStatus('offline'));
+
+        function showNetworkStatus(status) {
+            const statusEl = document.getElementById('networkStatus');
+            statusEl.textContent = status === 'online' ? '网络已连接' : '网络已断开';
+            statusEl.className = `network-status ${status}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // 自动调整输入框高度
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight < 100 ? this.scrollHeight : 100) + 'px';
         });
 
+        // 字数统计
+        function updateCharCount() {
+            const length = messageInput.value.length;
+            const maxLen = 500;
+            charCount.textContent = `${length}/${maxLen}`;
+            
+            if (length >= maxLen) {
+                charCount.className = 'char-count error';
+                sendButton.disabled = true;
+            } else if (length >= maxLen * 0.9) {
+                charCount.className = 'char-count warning';
+                sendButton.disabled = false;
+            } else {
+                charCount.className = 'char-count';
+                sendButton.disabled = false;
+            }
+        }
+
+        // 处理回车发送
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -323,26 +606,42 @@
             }
         }
 
+        // 快捷提问
         function sendQuickQuestion(text) {
             messageInput.value = text;
             sendMessage();
         }
 
-        async function sendMessage() {
-            const text = messageInput.value.trim();
+        // 发送消息（带重试机制）
+        async function sendMessage(lastText = null) {
+            const text = lastText || messageInput.value.trim();
+            const maxLen = 500;
+
             if (!text || isTyping) return;
 
+            if (text.length > maxLen) {
+                addMessage(`消息太长，请控制在${maxLen}字以内`, 'assistant');
+                return;
+            }
+
+            // 清空输入框
             messageInput.value = '';
             messageInput.style.height = '36px';
+            updateCharCount();
 
+            // 添加用户消息
             addMessage(text, 'user');
+
+            // 显示打字指示器
             showTypingIndicator();
 
             try {
+                // 调用API
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'x-run-id': sessionId
                     },
                     body: JSON.stringify({
                         text: text
@@ -354,8 +653,14 @@
                 }
 
                 const data = await response.json();
+                
+                // 移除打字指示器
                 hideTypingIndicator();
 
+                // 重置重试计数
+                retryCount = 0;
+
+                // 获取AI回复
                 if (data.messages && data.messages.length > 0) {
                     const lastMessage = data.messages[data.messages.length - 1];
                     if (lastMessage.type === 'ai' && lastMessage.content) {
@@ -368,25 +673,86 @@
 
             } catch (error) {
                 hideTypingIndicator();
-                addMessage(`请求失败：${error.message}`, 'assistant');
+                
+                // 重试机制
+                if (retryCount < MAX_RETRY) {
+                    retryCount++;
+                    addMessage(`网络请求失败，正在重试 (${retryCount}/${MAX_RETRY})...`, 'assistant');
+                    setTimeout(() => sendMessage(text), 1000);
+                } else {
+                    retryCount = 0;
+                    addMessage(`请求失败：${error.message}`, 'assistant', true);
+                }
             }
         }
 
-        function addMessage(content, type) {
+        // 开始新对话
+        function startNewChat() {
+            if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
+                chatContainer.innerHTML = '';
+                addWelcomeMessage();
+                
+                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('chat_session_id', sessionId);
+                
+                addMessage('已开始新对话！有什么可以帮你的？', 'assistant');
+            }
+        }
+
+        // 显示使用说明
+        function showUsage() {
+            alert('使用说明：\n\n1. 告诉我你的职业、年龄、收入等信息\n2. 我会根据你的情况推荐合适的贷款产品\n3. 点击"新对话"按钮可以开始新的咨询\n\n如有疑问，请联系客服。');
+        }
+
+        // 添加欢迎消息
+        function addWelcomeMessage() {
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.innerHTML = `
+                <div class="message assistant">
+                    <div class="avatar">👨‍💼</div>
+                    <div class="message-bubble">
+                        你好！我是老宁 🎯<br><br>
+                        我来帮你匹配合适的银行贷款产品。你可以告诉我你的情况，比如：<br><br>
+                        • 你是工薪族、企业主还是自由职业者？<br>
+                        • 年龄多少？<br>
+                        • 收入或年流水情况？<br>
+                        • 负债情况如何？<br><br>
+                        我会根据你的信息为你推荐最合适的产品！
+                    </div>
+                </div>
+
+                <div class="quick-questions">
+                    <button class="quick-question" onclick="sendQuickQuestion('我是个工薪族，35岁，月薪1.5万，公积金基数1.2万，帮我匹配产品')">工薪族匹配</button>
+                    <button class="quick-question" onclick="sendQuickQuestion('我是个企业主，35岁，年流水300万，有实际经营场所，帮我匹配产品')">企业主匹配</button>
+                    <button class="quick-question" onclick="sendQuickQuestion('我是自由职业者，年收入50万，有房有车，帮我匹配产品')">自由职业匹配</button>
+                </div>
+            `;
+            chatContainer.appendChild(welcomeDiv);
+            scrollToBottom();
+        }
+
+        // 添加消息到聊天界面
+        function addMessage(content, type, showRetry = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
 
             const avatar = type === 'assistant' ? '👨‍💼' : '👤';
             
+            let retryButton = showRetry ? '<button class="retry-btn" onclick="sendMessage()">重试</button>' : '';
+            
             messageDiv.innerHTML = `
                 <div class="avatar">${avatar}</div>
-                <div class="message-bubble">${content}</div>
+                <div class="message-bubble">
+                    ${content}
+                    ${retryButton}
+                </div>
             `;
 
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
         }
 
+        // 显示打字指示器
         function showTypingIndicator() {
             isTyping = true;
             const typingDiv = document.createElement('div');
@@ -405,6 +771,7 @@
             scrollToBottom();
         }
 
+        // 隐藏打字指示器
         function hideTypingIndicator() {
             isTyping = false;
             const typingMessage = chatContainer.querySelector('.typing-message');
@@ -413,10 +780,12 @@
             }
         }
 
+        // 滚动到底部
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        // 格式化Markdown
         function formatMarkdown(text) {
             let formatted = text.replace(/\n/g, '<br>');
             formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -426,8 +795,15 @@
             return formatted;
         }
 
+        // 页面加载完成后
         window.addEventListener('load', () => {
-            scrollToBottom();
+            // 隐藏加载动画
+            setTimeout(() => {
+                pageLoader.classList.add('hidden');
+            }, 500);
+            
+            // 添加欢迎消息
+            addWelcomeMessage();
         });
     </script>
 </body>
