@@ -271,6 +271,11 @@
             font-family: inherit;
         }
 
+        #messageInput:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .char-count {
             font-size: 10px;
             color: #999;
@@ -299,17 +304,17 @@
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        #sendButton:hover {
+        #sendButton:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        #sendButton:active {
+        #sendButton:active:not(:disabled) {
             transform: scale(0.95);
         }
 
         #sendButton:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
@@ -368,7 +373,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .quick-question:hover {
+        .quick-question:hover:not(:disabled) {
             background: #667eea;
             color: white;
             border-color: #667eea;
@@ -376,28 +381,16 @@
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        .quick-question:active {
+        .quick-question:active:not(:disabled) {
             transform: translateY(0);
         }
 
+        .quick-question:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* 错误提示 */
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
         .retry-btn {
             background: #667eea;
             color: white;
@@ -486,6 +479,17 @@
         .network-status.offline {
             background: rgba(231, 76, 60, 0.9);
         }
+
+        /* 超时提示样式 */
+        .timeout-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -543,8 +547,6 @@
         const API_URL_STREAM = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/stream_run';
 
         let isTyping = false;
-        let retryCount = 0;
-        const MAX_RETRY = 3;
 
         // 会话管理 - 生成或获取session_id
         let sessionId = localStorage.getItem('chat_session_id');
@@ -612,22 +614,24 @@
             sendMessage();
         }
 
-        // 发送消息（带重试机制）
-        async function sendMessage(lastText = null) {
-            const text = lastText || messageInput.value.trim();
-            const maxLen = 500;
-
+        // 发送消息（带超时控制和错误处理）
+        async function sendMessage() {
+            const text = messageInput.value.trim();
             if (!text || isTyping) return;
 
-            if (text.length > maxLen) {
-                addMessage(`消息太长，请控制在${maxLen}字以内`, 'assistant');
+            // 防止重复提交
+            if (messageInput.disabled) {
                 return;
             }
+
+            // 禁用输入框和发送按钮，防止重复提交
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            sendButton.textContent = '发送中...';
 
             // 清空输入框
             messageInput.value = '';
             messageInput.style.height = '36px';
-            updateCharCount();
 
             // 添加用户消息
             addMessage(text, 'user');
@@ -636,6 +640,13 @@
             showTypingIndicator();
 
             try {
+                // 创建超时控制器（90秒超时）
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+                // 添加超时提示
+                const timeoutMessageDiv = addTimeoutWarning();
+
                 // 调用API
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -645,8 +656,12 @@
                     },
                     body: JSON.stringify({
                         text: text
-                    })
+                    }),
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
+                timeoutMessageDiv.remove();
 
                 if (!response.ok) {
                     throw new Error('请求失败，请稍后重试');
@@ -657,13 +672,17 @@
                 // 移除打字指示器
                 hideTypingIndicator();
 
-                // 重置重试计数
-                retryCount = 0;
+                // 启用输入框和发送按钮
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                sendButton.textContent = '发送';
+                messageInput.focus();
 
                 // 获取AI回复
                 if (data.messages && data.messages.length > 0) {
                     const lastMessage = data.messages[data.messages.length - 1];
                     if (lastMessage.type === 'ai' && lastMessage.content) {
+                        // 格式化Markdown内容
                         const formattedContent = formatMarkdown(lastMessage.content);
                         addMessage(formattedContent, 'assistant');
                     }
@@ -674,16 +693,62 @@
             } catch (error) {
                 hideTypingIndicator();
                 
-                // 重试机制
-                if (retryCount < MAX_RETRY) {
-                    retryCount++;
-                    addMessage(`网络请求失败，正在重试 (${retryCount}/${MAX_RETRY})...`, 'assistant');
-                    setTimeout(() => sendMessage(text), 1000);
+                // 启用输入框和发送按钮
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                sendButton.textContent = '发送';
+                
+                // 处理超时错误
+                if (error.name === 'AbortError') {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message assistant';
+                    errorDiv.innerHTML = `
+                        <div class="avatar">👨‍💼</div>
+                        <div class="message-bubble" style="background: #fff3cd; color: #856404;">
+                            <div>请求超时，可能由于网络较慢或服务器繁忙</div>
+                            <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
+                        </div>
+                    `;
+                    chatContainer.appendChild(errorDiv);
+                    scrollToBottom();
                 } else {
-                    retryCount = 0;
-                    addMessage(`请求失败：${error.message}`, 'assistant', true);
+                    // 处理其他错误
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message assistant';
+                    errorDiv.innerHTML = `
+                        <div class="avatar">👨‍💼</div>
+                        <div class="message-bubble" style="background: #fee; color: #c33;">
+                            <div>请求失败：${error.message}</div>
+                            <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
+                        </div>
+                    `;
+                    chatContainer.appendChild(errorDiv);
+                    scrollToBottom();
                 }
             }
+        }
+
+        // 添加超时提示
+        function addTimeoutWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'timeout-warning';
+            warningDiv.textContent = '⏱️ 正在处理中，请稍候...';
+            chatContainer.appendChild(warningDiv);
+            scrollToBottom();
+            return warningDiv;
+        }
+
+        // 重试发送消息
+        function retryMessage(text) {
+            // 移除错误消息
+            const errorMessages = chatContainer.querySelectorAll('.message.assistant .message-bubble[style*="background: #fee"], .message.assistant .message-bubble[style*="background: #fff3cd"]');
+            errorMessages.forEach(msg => {
+                msg.closest('.message').remove();
+            });
+            
+            // 重新发送消息
+            messageInput.value = text;
+            sendMessage();
         }
 
         // 开始新对话
