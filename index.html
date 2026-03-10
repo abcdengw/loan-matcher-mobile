@@ -343,8 +343,8 @@
     </div>
 
     <script>
-        // ✅ 直接使用旧的 Coze Site URL（不需要代理）
-        const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
+        // ⚠️ 请替换为您的 Worker URL
+        const WORKER_URL = 'https://sweet-block-1fd5.2812571079.workers.dev';
 
         let isTyping = false;
 
@@ -406,8 +406,8 @@
             showTypingIndicator();
 
             try {
-                // 直接调用 Coze Site
-                const response = await fetch(API_URL, {
+                // 调用 Worker 代理
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
