@@ -3,41 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <!-- SEO优化 -->
-    <title>产品匹配官-老宁 | 智能贷款产品推荐助手</title>
-    <meta name="description" content="我是老宁，专业的产品匹配官，根据您的个人情况为您推荐合适的银行贷款产品。支持工薪族、企业主、自由职业者等多种职业类型。">
-    <meta name="keywords" content="贷款产品推荐,银行贷款,产品匹配,工薪族贷款,企业主贷款,老宁">
-    <meta name="author" content="老宁">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://abcdengw.github.io/loan-matcher-mobile/">
-    <meta property="og:title" content="产品匹配官-老宁 | 智能贷款产品推荐">
-    <meta property="og:description" content="根据您的个人情况为您推荐合适的银行贷款产品">
-    <meta property="og:image" content="https://abcdengw.github.io/loan-matcher-mobile/og-image.png">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://abcdengw.github.io/loan-matcher-mobile/">
-    <meta property="twitter:title" content="产品匹配官-老宁 | 智能贷款产品推荐">
-    <meta property="twitter:description" content="根据您的个人情况为您推荐合适的银行贷款产品">
-    <meta property="twitter:image" content="https://abcdengw.github.io/loan-matcher-mobile/og-image.png">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
-    <!-- PWA -->
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="产品匹配官">
-    
-    <!-- CSS -->
+    <title>产品匹配官-老宁</title>
     <style>
         * {
             margin: 0;
@@ -54,7 +20,6 @@
             flex-direction: column;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         /* 页面加载动画 */
@@ -95,12 +60,6 @@
             color: white;
             margin-top: 20px;
             font-size: 16px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
         }
 
         /* 顶部标题栏 */
@@ -124,7 +83,6 @@
             font-size: 18px;
             font-weight: 600;
             text-align: center;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         .header .subtitle {
@@ -152,10 +110,6 @@
         .new-chat-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: rotate(180deg);
-        }
-
-        .new-chat-btn:active {
-            transform: scale(0.9);
         }
 
         /* 聊天消息区域 */
@@ -276,21 +230,6 @@
             cursor: not-allowed;
         }
 
-        .char-count {
-            font-size: 10px;
-            color: #999;
-            text-align: right;
-            margin-top: 2px;
-        }
-
-        .char-count.warning {
-            color: #f39c12;
-        }
-
-        .char-count.error {
-            color: #e74c3c;
-        }
-
         #sendButton {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -408,35 +347,6 @@
             transform: scale(1.05);
         }
 
-        /* 页脚 */
-        .footer {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-            border-top: 1px solid #e0e0e0;
-            flex-shrink: 0;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .disclaimer {
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-
-        .contact {
-            color: #999;
-        }
-
         /* 滚动条美化 */
         .chat-container::-webkit-scrollbar {
             width: 4px;
@@ -449,35 +359,6 @@
         .chat-container::-webkit-scrollbar-thumb {
             background: rgba(102, 126, 234, 0.3);
             border-radius: 2px;
-        }
-
-        /* 网络状态提示 */
-        .network-status {
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 1000;
-            display: none;
-            animation: fadeInOut 3s ease;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
-        }
-
-        .network-status.online {
-            background: rgba(46, 204, 113, 0.9);
-        }
-
-        .network-status.offline {
-            background: rgba(231, 76, 60, 0.9);
         }
 
         /* 超时提示样式 */
@@ -498,9 +379,6 @@
         <div class="loader-spinner"></div>
         <div class="loader-text">老宁正在加载...</div>
     </div>
-
-    <!-- 网络状态提示 -->
-    <div id="networkStatus" class="network-status"></div>
 
     <!-- 顶部标题栏 -->
     <div class="header">
@@ -524,21 +402,9 @@
                 placeholder="输入你的情况..."
                 rows="1"
                 onkeydown="handleKeyDown(event)"
-                oninput="updateCharCount()"
             ></textarea>
-            <div class="char-count" id="charCount">0/500</div>
         </div>
         <button id="sendButton" onclick="sendMessage()">发送</button>
-    </div>
-
-    <!-- 页脚 -->
-    <div class="footer">
-        <div class="disclaimer">
-            <strong>免责声明：</strong>本服务提供的贷款产品信息仅供参考，具体额度、利率以银行实际审批结果为准。本服务不承诺任何贷款获批结果。
-        </div>
-        <div class="contact">
-            使用说明 | <a href="#" onclick="showUsage()">如何使用</a> | 有问题请联系客服
-        </div>
     </div>
 
     <script>
@@ -559,46 +425,13 @@
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const charCount = document.getElementById('charCount');
         const pageLoader = document.getElementById('page-loader');
-
-        // 网络状态检测
-        window.addEventListener('online', () => showNetworkStatus('online'));
-        window.addEventListener('offline', () => showNetworkStatus('offline'));
-
-        function showNetworkStatus(status) {
-            const statusEl = document.getElementById('networkStatus');
-            statusEl.textContent = status === 'online' ? '网络已连接' : '网络已断开';
-            statusEl.className = `network-status ${status}`;
-            statusEl.style.display = 'block';
-            setTimeout(() => {
-                statusEl.style.display = 'none';
-            }, 3000);
-        }
 
         // 自动调整输入框高度
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight < 100 ? this.scrollHeight : 100) + 'px';
         });
-
-        // 字数统计
-        function updateCharCount() {
-            const length = messageInput.value.length;
-            const maxLen = 500;
-            charCount.textContent = `${length}/${maxLen}`;
-            
-            if (length >= maxLen) {
-                charCount.className = 'char-count error';
-                sendButton.disabled = true;
-            } else if (length >= maxLen * 0.9) {
-                charCount.className = 'char-count warning';
-                sendButton.disabled = false;
-            } else {
-                charCount.className = 'char-count';
-                sendButton.disabled = false;
-            }
-        }
 
         // 处理回车发送
         function handleKeyDown(event) {
@@ -762,11 +595,6 @@
                 
                 addMessage('已开始新对话！有什么可以帮你的？', 'assistant');
             }
-        }
-
-        // 显示使用说明
-        function showUsage() {
-            alert('使用说明：\n\n1. 告诉我你的职业、年龄、收入等信息\n2. 我会根据你的情况推荐合适的贷款产品\n3. 点击"新对话"按钮可以开始新的咨询\n\n如有疑问，请联系客服。');
         }
 
         // 添加欢迎消息
