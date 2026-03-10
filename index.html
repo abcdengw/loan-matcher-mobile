@@ -343,8 +343,8 @@
     </div>
 
     <script>
-        // API配置 - 使用旧的Coze Site（之前能工作的版本）
-        const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
+        // ✅ Cloudflare Worker 代理 URL（已配置）
+        const API_URL = 'https://sweet-block-1fd5.2812571079.workers.dev';
 
         let isTyping = false;
 
@@ -406,7 +406,7 @@
             showTypingIndicator();
 
             try {
-                // 调用API - 使用旧的请求格式
+                // 调用代理API
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -423,7 +423,7 @@
                 }
 
                 const data = await response.json();
-                
+
                 // 移除打字指示器
                 hideTypingIndicator();
 
@@ -441,20 +441,24 @@
                         const formattedContent = formatMarkdown(lastMessage.content);
                         addMessage(formattedContent, 'assistant');
                     }
+                } else if (data.content) {
+                    // 兼容直接返回 content 的情况
+                    const formattedContent = formatMarkdown(data.content);
+                    addMessage(formattedContent, 'assistant');
                 } else {
                     addMessage('抱歉，我暂时无法回复。请稍后再试。', 'assistant');
                 }
 
             } catch (error) {
                 hideTypingIndicator();
-                
+
                 // 启用输入框和发送按钮
                 messageInput.disabled = false;
                 sendButton.disabled = false;
                 sendButton.textContent = '发送';
-                
+
                 console.error('API请求错误:', error);
-                
+
                 // 添加错误消息和重试按钮
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'message assistant';
@@ -477,7 +481,7 @@
             errorMessages.forEach(msg => {
                 msg.closest('.message').remove();
             });
-            
+
             // 重新发送消息
             messageInput.value = text;
             sendMessage();
@@ -488,14 +492,14 @@
             if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
                 // 清空聊天记录
                 chatContainer.innerHTML = '';
-                
+
                 // 添加欢迎消息
                 addWelcomeMessage();
-                
+
                 // 生成新的session_id
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('chat_session_id', sessionId);
-                
+
                 addMessage('已开始新对话！有什么可以帮你的？', 'assistant');
             }
         }
@@ -533,7 +537,7 @@
             messageDiv.className = `message ${type}`;
 
             const avatar = type === 'assistant' ? '👨‍💼' : '👤';
-            
+
             messageDiv.innerHTML = `
                 <div class="avatar">${avatar}</div>
                 <div class="message-bubble">${content}</div>
@@ -580,19 +584,19 @@
         function formatMarkdown(text) {
             // 转换换行
             let formatted = text.replace(/\n/g, '<br>');
-            
+
             // 转换加粗 **text**
             formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
+
             // 转换标题 ## text
             formatted = formatted.replace(/^###\s+(.*)$/gm, '<h4>$1</h4>');
-            
+
             // 转换列表项 - text
             formatted = formatted.replace(/^-\s+(.*)$/gm, '• $1');
-            
+
             // 转换引用 > text
             formatted = formatted.replace(/^>\s+(.*)$/gm, '<em>$1</em>');
-            
+
             return formatted;
         }
 
