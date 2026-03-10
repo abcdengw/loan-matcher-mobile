@@ -1,115 +1,58 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>产品匹配官-老宁</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+    <meta charset="UTF    <meta name="" content="-width, initial-scale1.0,.0, user-scalable=no    <title>产品匹配-老宁</title>
+    <style            margin: 0;
+           : ;
+           -sizing-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background-color: #f5f5f5;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+           , BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            #f5f5f5;
+            height: vh;
+            display:            flex-direction: column;
             overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* 页面加载动画 */
-        #page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        #page-loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loader-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loader-text {
-            color: white;
-            margin-top: 20px;
-            font-size: 16px;
         }
 
         /* 顶部标题栏 */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135eea 0%, #%);
             color: white;
-            padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-            z-index: 100;
+            padding: 15px 20px            box 2px 10px rgba(,1;
+            z100;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .header-content {
+            gap:         .header-content {
             flex: 1;
-        }
-
-        .header h1 {
+               .header h1 {
             font-size: 18px;
             font-weight: 600;
-            text-align: center;
+            text-align:;
         }
 
-        .header .subtitle {
-            font-size: 12px;
+        .subtitle {
+12px;
             opacity: 0.9;
             text-align: center;
             margin-top: 5px;
         }
 
-        .new-chat-btn {
-            background: rgba(255, 255, 255, 0.2);
+        .new-chat            background: rgba(, 255 0.2);
             border: none;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
+                       transition: all 0.2s;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .new-chat-btn:hover {
+            {
             background: rgba(255, 255, 255, 0.3);
             transform: rotate(180deg);
+        }
+
+        .new-chat-btn:active {
+            transform: scale(0.9);
         }
 
         /* 聊天消息区域 */
@@ -117,70 +60,52 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px 15px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
+            scroll        }
 
         /* 消息气泡样式 */
         .message {
-            display: flex;
-            margin-bottom: 15px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+            display: flex margin-bottom: 15px;
+            animation:3sframes fadeIn {
+            opacity: 0;
+                transformpx);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
-            }
         }
 
-        .message.user {
-            justify-content: flex-end;
+                   justify-content: flex-end;
         }
 
         .message.assistant {
-            justify-content: flex-start;
+ flex-start;
         }
 
         .avatar {
             width: 40px;
-            height: 40px;
-            border-radius: 50%;
+40px;
+ 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size:             flex-shrink: 0;
         }
 
-        .user .avatar {
-            margin-left: 10px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .user .avatar10-gradientf093fb 0%, #f5576c 100%);
         }
 
         .assistant .avatar {
             margin-right: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #76%);
         }
 
         .message-bubble {
             max-width: 75%;
             padding: 12px 16px;
-            border-radius: 18px;
+           -radius: 18px;
             font-size: 14px;
-            line-height: 1.6;
-            word-wrap: break-word;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .user .message-bubble {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            line-height:            -word;
+ .message-bubble {
+-gradient(135deg, #667eea 0%, #764100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -188,75 +113,44 @@
         .assistant .message-bubble {
             background: white;
             color: #333;
-            border-bottom-left-radius: 4px;
-        }
+            border-bottom-left-radius:;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08        }
 
         /* 输入区域 */
         .input-container {
-            background: white;
-            padding: 12px 15px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            flex-shrink: 0;
-            display: flex;
+            background:            padding: 12px 15px;
+            box-shadow:   rgba(0,0,0.05rink: 0: flex;
             align-items: flex-end;
             gap: 10px;
         }
 
         .input-wrapper {
-            flex: 1;
-            background: #f5f5f5;
-            border-radius: 20px;
-            padding: 8px 15px;
+1;
+            backgroundf5f5f5;
+            border-radius: 20px 8px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
         }
 
         #messageInput {
-            flex: 1;
-            border: none;
-            background: transparent;
+           :: transparent;
             font-size: 14px;
-            outline: none;
+ outline: none;
             resize: none;
-            max-height: 100px;
-            min-height: 36px;
+            max-height100px            min-height: 36px;
             padding: 4px 0;
             line-height: 1.5;
-            font-family: inherit;
-        }
-
-        #messageInput:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #sendButton {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+       sendButton {
+            background: linear1357eea 0%, #764ba2             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            padding: 10px            border            font-size:             cursor: pointer;
+            transition0.2s, opacity2s-shrink: send transform.05        #sendButton:active {
+            transform:.95);
         }
 
-        #sendButton:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        #sendButton:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-
-        #sendButton:disabled {
-            opacity: 0.6;
+        #            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
-        }
+            transform:        }
 
         /* 加载动画 */
         .typing-indicator {
@@ -281,10 +175,9 @@
             animation-delay: 0.4s;
         }
 
-        @keyframes typing {
-            0%, 100% {
+        @key 0%, 100% {
                 opacity: 0.3;
-                transform: scale(0.8);
+ transform.8);
             }
             50% {
                 opacity: 1;
@@ -309,42 +202,29 @@
             color: #666;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .quick-question:hover:not(:disabled) {
+        .quick-question:hover {
             background: #667eea;
             color: white;
             border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .quick-question:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .quick-question:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         /* 错误提示 */
-        .retry-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 6px 12px;
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px 15px;
             border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: all 0.2s;
+            margin-bottom: 15px;
+            font-size: 13px;
+            animation: shake 0.5s;
         }
 
-        .retry-btn:hover {
-            background: #5568d3;
-            transform: scale(1.05);
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         /* 滚动条美化 */
@@ -361,26 +241,24 @@
             border-radius: 2px;
         }
 
-        /* 超时提示样式 */
-        .timeout-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-top: 10px;
+        /* 重试按钮样式 */
+        .retry-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
             font-size: 12px;
+        }
+
+        .retry-btn:hover {
+            background: #5568d3;
         }
     </style>
 </head>
 <body>
-    <!-- 页面加载动画 -->
-    <div id="page-loader">
-        <div class="loader-spinner"></div>
-        <div class="loader-text">老宁正在加载...</div>
-    </div>
-
-    <!-- 顶部标题栏 -->
     <div class="header">
         <button class="new-chat-btn" onclick="startNewChat()" title="新对话">🔄</button>
         <div class="header-content">
@@ -389,12 +267,10 @@
         </div>
     </div>
 
-    <!-- 聊天消息区域 -->
     <div class="chat-container" id="chatContainer">
         <!-- 欢迎消息将通过JavaScript动态添加 -->
     </div>
 
-    <!-- 输入区域 -->
     <div class="input-container">
         <div class="input-wrapper">
             <textarea
@@ -408,9 +284,16 @@
     </div>
 
     <script>
-        // API配置
-        const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
-        const API_URL_STREAM = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/stream_run';
+        // API配置 - 支持通过URL参数配置
+        const urlParams = new URLSearchParams(window.location.search);
+        const customApiUrl = urlParams.get('api_url');
+        
+        // 默认API URL（旧地址）
+        const DEFAULT_API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
+        
+        // 如果URL中有api_url参数，使用自定义的URL；否则使用默认URL
+        const API_URL = customApiUrl ? customApiUrl : DEFAULT_API_URL;
+        const API_URL_STREAM = API_URL.replace('/run', '/stream_run');
 
         let isTyping = false;
 
@@ -425,7 +308,6 @@
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const pageLoader = document.getElementById('page-loader');
 
         // 自动调整输入框高度
         messageInput.addEventListener('input', function() {
@@ -447,7 +329,7 @@
             sendMessage();
         }
 
-        // 发送消息（带超时控制和错误处理）
+        // 发送消息
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || isTyping) return;
@@ -473,13 +355,6 @@
             showTypingIndicator();
 
             try {
-                // 创建超时控制器（90秒超时）
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 90000);
-
-                // 添加超时提示
-                const timeoutMessageDiv = addTimeoutWarning();
-
                 // 调用API
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -489,12 +364,8 @@
                     },
                     body: JSON.stringify({
                         text: text
-                    }),
-                    signal: controller.signal
+                    })
                 });
-
-                clearTimeout(timeoutId);
-                timeoutMessageDiv.remove();
 
                 if (!response.ok) {
                     throw new Error('请求失败，请稍后重试');
@@ -531,50 +402,25 @@
                 sendButton.disabled = false;
                 sendButton.textContent = '发送';
                 
-                // 处理超时错误
-                if (error.name === 'AbortError') {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'message assistant';
-                    errorDiv.innerHTML = `
-                        <div class="avatar">👨‍💼</div>
-                        <div class="message-bubble" style="background: #fff3cd; color: #856404;">
-                            <div>请求超时，可能由于网络较慢或服务器繁忙</div>
-                            <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
-                        </div>
-                    `;
-                    chatContainer.appendChild(errorDiv);
-                    scrollToBottom();
-                } else {
-                    // 处理其他错误
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'message assistant';
-                    errorDiv.innerHTML = `
-                        <div class="avatar">👨‍💼</div>
-                        <div class="message-bubble" style="background: #fee; color: #c33;">
-                            <div>请求失败：${error.message}</div>
-                            <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
-                        </div>
-                    `;
-                    chatContainer.appendChild(errorDiv);
-                    scrollToBottom();
-                }
+                // 添加错误消息和重试按钮
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message assistant';
+                errorDiv.innerHTML = `
+                    <div class="avatar">👨‍💼</div>
+                    <div class="message-bubble" style="background: #fee; color: #c33;">
+                        <div>请求失败：${error.message}</div>
+                        <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
+                    </div>
+                `;
+                chatContainer.appendChild(errorDiv);
+                scrollToBottom();
             }
-        }
-
-        // 添加超时提示
-        function addTimeoutWarning() {
-            const warningDiv = document.createElement('div');
-            warningDiv.className = 'timeout-warning';
-            warningDiv.textContent = '⏱️ 正在处理中，请稍候...';
-            chatContainer.appendChild(warningDiv);
-            scrollToBottom();
-            return warningDiv;
         }
 
         // 重试发送消息
         function retryMessage(text) {
             // 移除错误消息
-            const errorMessages = chatContainer.querySelectorAll('.message.assistant .message-bubble[style*="background: #fee"], .message.assistant .message-bubble[style*="background: #fff3cd"]');
+            const errorMessages = chatContainer.querySelectorAll('.message.assistant .message-bubble[style*="background: #fee"]');
             errorMessages.forEach(msg => {
                 msg.closest('.message').remove();
             });
@@ -587,9 +433,13 @@
         // 开始新对话
         function startNewChat() {
             if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
+                // 清空聊天记录
                 chatContainer.innerHTML = '';
+                
+                // 添加欢迎消息
                 addWelcomeMessage();
                 
+                // 生成新的session_id
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('chat_session_id', sessionId);
                 
@@ -625,20 +475,15 @@
         }
 
         // 添加消息到聊天界面
-        function addMessage(content, type, showRetry = false) {
+        function addMessage(content, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
 
             const avatar = type === 'assistant' ? '👨‍💼' : '👤';
             
-            let retryButton = showRetry ? '<button class="retry-btn" onclick="sendMessage()">重试</button>' : '';
-            
             messageDiv.innerHTML = `
                 <div class="avatar">${avatar}</div>
-                <div class="message-bubble">
-                    ${content}
-                    ${retryButton}
-                </div>
+                <div class="message-bubble">${content}</div>
             `;
 
             chatContainer.appendChild(messageDiv);
@@ -680,22 +525,26 @@
 
         // 格式化Markdown
         function formatMarkdown(text) {
+            // 转换换行
             let formatted = text.replace(/\n/g, '<br>');
+            
+            // 转换加粗 **text**
             formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // 转换标题 ## text
             formatted = formatted.replace(/^###\s+(.*)$/gm, '<h4>$1</h4>');
+            
+            // 转换列表项 - text
             formatted = formatted.replace(/^-\s+(.*)$/gm, '• $1');
+            
+            // 转换引用 > text
             formatted = formatted.replace(/^>\s+(.*)$/gm, '<em>$1</em>');
+            
             return formatted;
         }
 
-        // 页面加载完成后
+        // 页面加载完成后添加欢迎消息
         window.addEventListener('load', () => {
-            // 隐藏加载动画
-            setTimeout(() => {
-                pageLoader.classList.add('hidden');
-            }, 500);
-            
-            // 添加欢迎消息
             addWelcomeMessage();
         });
     </script>
