@@ -417,16 +417,26 @@
             showTypingIndicator();
 
             try {
-                // 调用API
+                // 调用API - 使用正确的请求格式
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + API_TOKEN,
-                        'x-run-id': sessionId
+                        'Authorization': 'Bearer ' + API_TOKEN
                     },
                     body: JSON.stringify({
-                        text: text
+                        content: {
+                            query: {
+                                prompt: [
+                                    {
+                                        type: 'text',
+                                        content: {
+                                            text: text
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                     })
                 });
 
