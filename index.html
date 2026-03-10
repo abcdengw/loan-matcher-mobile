@@ -266,7 +266,7 @@
         .quick-question:hover {
             background: #667eea;
             color: white;
-            border-color: #667eea;
+            border-color: #667eea';
         }
 
         /* 错误提示 */
@@ -343,18 +343,8 @@
     </div>
 
     <script>
-        // API配置 - 支持通过URL参数配置
-        const urlParams = new URLSearchParams(window.location.search);
-        const customApiUrl = urlParams.get('api_url');
-        const customApiToken = urlParams.get('api_token');
-        
-        // 默认API配置 - 使用 stream_run 端点
-        const DEFAULT_API_URL = 'https://c4d66yxh4d.coze.site/stream_run';
-        const DEFAULT_API_TOKEN = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjE2NTYyZmQ2LTczYTYtNGQyYi1hMzQyLTk4YmYwNDExMjQ2OCJ9.eyJpc3MiOiJodHRwczovL2FwaS5jb3plLmNuIiwiYXVkIjpbIjVWalZaSGg3TTBHTVBSYXJ6Z1Zjb0UxdWFVS09xUWNvIl0sImV4cCI6ODIxMDI2Njg3Njc5OSwiaWF0IjoxNzczMTIzNzY4LCJzdWIiOiJzcGlmZmU6Ly9hcGkuY296ZS5jbi93b3JrbG9hZF9pZGVudGl0eS9pZDo3NjE1MTU2NzkxMjMxMzgxNTY3Iiwic3JjIjoiaW5ib3VuZF9hdXRoX2FjY2Vzc190b2tlbl9pZDo3NjE1NTA4NTk4MDg4NTMyMDAzIn0.oKje_aE_p1MM1FB_3LzlOHaMSkSF0Wx2d9uQCnMrwye0qRP46WLo2VgZo9JWTPt1vufKof42B5anMH13Zz9Z9aZi50Mc__71T2cYvak01pFwoimMeTWB1XtcaUPOMkYhUSJog1otS_KkdoTmZW4K0xAGd1AHvTDhwjdjx2mRGeqDJOMpXQhLe_p8FDrExHaKfqbc2j10Mhv6vqV2H2XG6sTGN7Xhft254xVFte-oSe6d-MLXUx6GDu2YO_rhJBPA9_EaVjXBRcm-14yRwPGxa9-SPPSAjYBy9ujYn42hJATYipx8qMCgVEhiavD_muOnEULI32xN7nWRbiPPrt-nDw';
-        
-        // 如果URL中有参数，使用自定义的URL和Token；否则使用默认值
-        const API_URL = customApiUrl ? customApiUrl : DEFAULT_API_URL;
-        const API_TOKEN = customApiToken ? customApiToken : DEFAULT_API_TOKEN;
+        // API配置 - 使用旧的Coze Site（之前能工作的版本）
+        const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
 
         let isTyping = false;
 
@@ -416,32 +406,20 @@
             showTypingIndicator();
 
             try {
-                // 调用API - 使用正确的请求格式和端点
+                // 调用API - 使用旧的请求格式
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + API_TOKEN
+                        'x-run-id': sessionId
                     },
                     body: JSON.stringify({
-                        content: {
-                            query: {
-                                prompt: [
-                                    {
-                                        type: 'text',
-                                        content: {
-                                            text: text
-                                        }
-                                    }
-                                ]
-                            }
-                        }
+                        text: text
                     })
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`请求失败 (${response.status}): ${errorText}`);
+                    throw new Error(`请求失败 (${response.status})`);
                 }
 
                 const data = await response.json();
