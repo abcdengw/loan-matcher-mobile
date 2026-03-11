@@ -204,7 +204,7 @@
     </div>
 
     <script>
-        // ✅ 直接使用 Coze API（无需代理）
+        // ✅ 使用 Coze 旧 API + 前端维护对话历史
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
 
         let isTyping = false;
@@ -213,6 +213,9 @@
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('chat_session_id', sessionId);
         }
+
+        // 前端维护对话历史
+        let conversationHistory = [];
 
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
@@ -288,6 +291,20 @@
             showTypingIndicator();
 
             try {
+                // 构建包含历史的提示词
+                let prompt = text;
+                if (conversationHistory.length > 0) {
+                    prompt = '以下是我们之前的对话历史：\n\n';
+                    conversationHistory.forEach((msg, index) => {
+                        if (msg.role === 'user') {
+                            prompt += `用户：${msg.content}\n`;
+                        } else {
+                            prompt += `老宁：${msg.content}\n`;
+                        }
+                    });
+                    prompt += `\n\n用户的新消息：${text}\n\n请基于上述对话历史，自然地继续对话，不要重复之前已经问过的问题。`;
+                }
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -295,7 +312,7 @@
                         'x-run-id': sessionId
                     },
                     body: JSON.stringify({
-                        text: text
+                        text: prompt
                     })
                 });
 
@@ -316,6 +333,15 @@
                     const lastMessage = data.messages[data.messages.length - 1];
                     if (lastMessage.type === 'ai' && lastMessage.content) {
                         addMessage(lastMessage.content, 'assistant');
+                        // 保存到历史
+                        conversationHistory.push({
+                            role: 'user',
+                            content: text
+                        });
+                        conversationHistory.push({
+                            role: 'assistant',
+                            content: lastMessage.content
+                        });
                     }
                 } else {
                     addMessage('抱歉，我暂时无法回复。请稍后再试。', 'assistant');
@@ -352,6 +378,7 @@
             if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
                 chatContainer.innerHTML = '';
                 addWelcomeMessage();
+                conversationHistory = [];
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('chat_session_id', sessionId);
             }
