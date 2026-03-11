@@ -204,15 +204,13 @@
     </div>
 
     <script>
-        // ✅ 使用 Coze 旧 API + 前端维护对话历史
+        // ✅ 使用 Coze 旧 API + 前端维护对话历史（修复版）
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
 
         let isTyping = false;
-        let sessionId = localStorage.getItem('chat_session_id');
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('chat_session_id', sessionId);
-        }
+
+        // ⚠️ 关键修复：每次刷新页面都生成新的 sessionId，不要从 localStorage 恢复
+        let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
         // 前端维护对话历史
         let conversationHistory = [];
@@ -379,8 +377,8 @@
                 chatContainer.innerHTML = '';
                 addWelcomeMessage();
                 conversationHistory = [];
+                // ⚠️ 关键修复：生成新的 sessionId，断开与 Coze 后端缓存会话的连接
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('chat_session_id', sessionId);
             }
         }
 
