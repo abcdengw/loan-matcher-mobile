@@ -406,8 +406,8 @@
             showTypingIndicator();
 
             try {
-                // 调用 Worker 代理
-                const response = await fetch(WORKER_URL, {
+                // 调用 vercel 代理
+                const response = await fetch(API_URL,  {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
