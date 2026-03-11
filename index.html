@@ -204,14 +204,12 @@
     </div>
 
     <script>
-        // ✅ 简化版：不维护前端历史，依赖 Coze 的记忆机制
+        // ✅ 最终修复版：添加明确的类型标识，帮助 Coze 理解
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
-        const REQUEST_TIMEOUT = 30000; // 30秒超时（缩短超时时间）
-        const MAX_RETRIES = 2; // 减少重试次数，避免重复发送
+        const REQUEST_TIMEOUT = 30000;
 
         let isTyping = false;
-
-        // 每次刷新页面都生成新的 sessionId，避免缓存
+        let requestLock = false;
         let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
         const chatContainer = document.getElementById('chatContainer');
@@ -289,14 +287,10 @@
             }
         }
 
-        // ⚠️ 请求锁，防止重复发送
-        let requestLock = false;
-
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || isTyping) return;
 
-            // ⚠️ 防止重复发送
             if (requestLock) {
                 console.log('请求正在进行中，忽略重复发送');
                 return;
@@ -315,10 +309,44 @@
             addMessage(text, 'user');
             showTypingIndicator();
 
-            // ⚠️ 关键修复：不发送历史，只发送当前消息
-            // 依赖 Coze 的 sessionId 记忆机制
+            // ⚠️ 关键修复：添加明确的类型标识，帮助 Coze 理解
+            let enhancedText = text;
+
+            // 检测职业类型
+            if (text.includes('企业主')) {
+                enhancedText = `[职业类型:企业主] ${text}`;
+            } else if (text.includes('自由职业者')) {
+                enhancedText = `[职业类型:自由职业者] ${text}`;
+            } else if (text.includes('工薪族')) {
+                enhancedText = `[职业类型:工薪族] ${text}`;
+            }
+
+            // 检测关键信息类型
+            if (/\d+岁/.test(text) || text.includes('年龄')) {
+                enhancedText = `[信息类型:年龄] ${enhancedText}`;
+            }
+            if (text.includes('公积金')) {
+                enhancedText = `[信息类型:公积金] ${enhancedText}`;
+            }
+            if (text.includes('社保')) {
+                enhancedText = `[信息类型:社保] ${enhancedText}`;
+            }
+            if (text.includes('工资') || text.includes('收入')) {
+                enhancedText = `[信息类型:收入] ${enhancedText}`;
+            }
+            if (text.includes('房') || text.includes('产')) {
+                enhancedText = `[信息类型:房产] ${enhancedText}`;
+            }
+            if (text.includes('车')) {
+                enhancedText = `[信息类型:车辆] ${enhancedText}`;
+            }
+            if (text.includes('负债')) {
+                enhancedText = `[信息类型:负债] ${enhancedText}`;
+            }
+
             try {
                 console.log('发送请求:', text);
+                console.log('增强后:', enhancedText);
 
                 const response = await fetchWithTimeout(API_URL, {
                     method: 'POST',
@@ -327,7 +355,7 @@
                         'x-run-id': sessionId
                     },
                     body: JSON.stringify({
-                        text: text
+                        text: enhancedText
                     })
                 }, REQUEST_TIMEOUT);
 
@@ -392,7 +420,6 @@
             if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
                 chatContainer.innerHTML = '';
                 addWelcomeMessage();
-                // ⚠️ 生成新的 sessionId，断开与 Coze 缓存会话的连接
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             }
         }
