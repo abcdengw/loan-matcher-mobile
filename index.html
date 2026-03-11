@@ -204,16 +204,19 @@
     </div>
 
     <script>
-        // ✅ 使用 Coze 旧 API + 前端维护对话历史（修复版）
+        // ✅ 使用 Coze 旧 API + 前端维护对话历史（修复版 v4）
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
+        const REQUEST_TIMEOUT = 45000; // 45秒超时
+        const MAX_RETRIES = 3; // 最多重试3次
 
         let isTyping = false;
 
-        // ⚠️ 关键修复：每次刷新页面都生成新的 sessionId，不要从 localStorage 恢复
+        // 每次刷新页面都生成新的 sessionId
         let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-        // 前端维护对话历史
+        // 前端维护对话历史（只保留最近 6 轮对话）
         let conversationHistory = [];
+        const MAX_HISTORY = 6;
 
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
@@ -272,15 +275,36 @@
             addMessage('你好！我是老宁 👋<br><br>我可以帮你：<br>✅ 匹配适合你的贷款产品<br>✅ 分析利率和费用<br>✅ 提供真实案例参考<br><br>请告诉我你的职业（工薪族/企业主/自由职业者）和其他情况，我来帮你找到最合适的产品！', 'assistant');
         }
 
+        // ⚠️ 关键修复：带超时和重试的 fetch 请求
+        async function fetchWithTimeout(url, options, timeout = REQUEST_TIMEOUT) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                return response;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+            }
+        }
+
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || isTyping) return;
 
-            if (messageInput.disabled) return;
+            if (messageInput.disabled || sendButton.disabled) {
+                return;
+            }
 
             messageInput.disabled = true;
             sendButton.disabled = true;
             sendButton.textContent = '发送中...';
+            isTyping = true;
 
             messageInput.value = '';
             messageInput.style.height = '36px';
@@ -288,81 +312,108 @@
             addMessage(text, 'user');
             showTypingIndicator();
 
-            try {
-                // 构建包含历史的提示词
-                let prompt = text;
-                if (conversationHistory.length > 0) {
-                    prompt = '以下是我们之前的对话历史：\n\n';
-                    conversationHistory.forEach((msg, index) => {
-                        if (msg.role === 'user') {
-                            prompt += `用户：${msg.content}\n`;
-                        } else {
-                            prompt += `老宁：${msg.content}\n`;
-                        }
-                    });
-                    prompt += `\n\n用户的新消息：${text}\n\n请基于上述对话历史，自然地继续对话，不要重复之前已经问过的问题。`;
-                }
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-run-id': sessionId
-                    },
-                    body: JSON.stringify({
-                        text: prompt
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`请求失败 (${response.status})`);
-                }
-
-                const data = await response.json();
-
-                hideTypingIndicator();
-
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-                sendButton.textContent = '发送';
-                messageInput.focus();
-
-                if (data.messages && data.messages.length > 0) {
-                    const lastMessage = data.messages[data.messages.length - 1];
-                    if (lastMessage.type === 'ai' && lastMessage.content) {
-                        addMessage(lastMessage.content, 'assistant');
-                        // 保存到历史
-                        conversationHistory.push({
-                            role: 'user',
-                            content: text
-                        });
-                        conversationHistory.push({
-                            role: 'assistant',
-                            content: lastMessage.content
-                        });
+            // 构建提示词
+            let prompt = text;
+            if (conversationHistory.length > 0) {
+                const recentHistory = conversationHistory.slice(-MAX_HISTORY);
+                prompt = '以下是我们最近的对话历史：\n\n';
+                recentHistory.forEach((msg) => {
+                    if (msg.role === 'user') {
+                        prompt += `用户：${msg.content}\n`;
+                    } else {
+                        prompt += `老宁：${msg.content}\n`;
                     }
-                } else {
-                    addMessage('抱歉，我暂时无法回复。请稍后再试。', 'assistant');
-                }
-
-            } catch (error) {
-                hideTypingIndicator();
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-                sendButton.textContent = '发送';
-
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'message assistant';
-                errorDiv.innerHTML = `
-                    <div class="avatar">👨‍💼</div>
-                    <div class="message-bubble" style="background: #fee; color: #c33;">
-                        <div>请求失败：${error.message}</div>
-                        <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
-                    </div>
-                `;
-                chatContainer.appendChild(errorDiv);
-                scrollToBottom();
+                });
+                prompt += `\n\n用户的新消息：${text}\n\n请基于上述对话历史，准确理解用户的输入，不要凭空编造信息。请自然地继续对话。`;
             }
+
+            // ⚠️ 关键修复：自动重试机制
+            let lastError = null;
+            for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                try {
+                    console.log(`尝试第 ${attempt + 1} 次请求...`);
+
+                    const response = await fetchWithTimeout(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-run-id': sessionId
+                        },
+                        body: JSON.stringify({
+                            text: prompt
+                        })
+                    }, REQUEST_TIMEOUT);
+
+                    if (!response.ok) {
+                        throw new Error(`请求失败 (${response.status})`);
+                    }
+
+                    const data = await response.json();
+
+                    hideTypingIndicator();
+
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    sendButton.textContent = '发送';
+                    messageInput.focus();
+                    isTyping = false;
+
+                    if (data.messages && data.messages.length > 0) {
+                        const lastMessage = data.messages[data.messages.length - 1];
+                        if (lastMessage.type === 'ai' && lastMessage.content) {
+                            addMessage(lastMessage.content, 'assistant');
+
+                            conversationHistory.push({
+                                role: 'user',
+                                content: text
+                            });
+                            conversationHistory.push({
+                                role: 'assistant',
+                                content: lastMessage.content
+                            });
+
+                            if (conversationHistory.length > MAX_HISTORY * 2) {
+                                conversationHistory = conversationHistory.slice(-MAX_HISTORY * 2);
+                            }
+                        }
+                    } else {
+                        addMessage('抱歉，我暂时无法回复。请稍后再试。', 'assistant');
+                    }
+
+                    // 成功，退出重试循环
+                    return;
+
+                } catch (error) {
+                    console.error(`第 ${attempt + 1} 次尝试失败:`, error);
+                    lastError = error;
+
+                    // 如果不是最后一次尝试，等待一下再重试
+                    if (attempt < MAX_RETRIES - 1) {
+                        console.log(`等待 ${attempt + 1} 秒后重试...`);
+                        await new Promise(resolve => setTimeout(resolve, (attempt + 1) * 1000));
+                    }
+                }
+            }
+
+            // 所有重试都失败了
+            hideTypingIndicator();
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            sendButton.textContent = '发送';
+            isTyping = false;
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'message assistant';
+            errorDiv.innerHTML = `
+                <div class="avatar">👨‍💼</div>
+                <div class="message-bubble" style="background: #fee; color: #c33;">
+                    <div>请求超时，已重试 ${MAX_RETRIES} 次。</div>
+                    <div style="font-size: 12px; margin-top: 5px;">错误：${lastError.message}</div>
+                    <button class="retry-btn" onclick="retryMessage('${text.replace(/'/g, "\\'")}')">重试</button>
+                </div>
+            `;
+            chatContainer.appendChild(errorDiv);
+            scrollToBottom();
         }
 
         function retryMessage(text) {
@@ -377,7 +428,6 @@
                 chatContainer.innerHTML = '';
                 addWelcomeMessage();
                 conversationHistory = [];
-                // ⚠️ 关键修复：生成新的 sessionId，断开与 Coze 后端缓存会话的连接
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             }
         }
