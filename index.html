@@ -349,7 +349,9 @@
 
         let isTyping = false;
         let requestLock = false;
-        let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        // ✅ 关键修复：双倍随机数，确保 session_id 绝对唯一
+        let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_' + Math.random().toString(36).substr(2, 9);
 
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
@@ -479,15 +481,21 @@
 
             try {
                 console.log('发送请求:', messageToSend);
+                console.log('当前 session_id:', sessionId);
+
+                // ✅ 添加请求时间戳，确保每次请求唯一
+                const requestTimestamp = Date.now();
 
                 const response = await fetchWithTimeout(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-run-id': sessionId
+                        'x-run-id': sessionId,
+                        'X-Request-ID': requestTimestamp.toString()
                     },
                     body: JSON.stringify({
-                        text: messageToSend
+                        text: messageToSend,
+                        timestamp: requestTimestamp
                     })
                 }, REQUEST_TIMEOUT);
 
@@ -562,11 +570,14 @@
                 // 清空聊天记录
                 chatContainer.innerHTML = '';
 
+                // ✅ 关键修复：生成全新的 session_id，确保断开与 Coze 缓存会话的连接
+                // 使用双倍随机数，确保绝对唯一
+                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_' + Math.random().toString(36).substr(2, 9);
+
+                console.log('新对话 session_id:', sessionId);
+
                 // 添加欢迎消息
                 addWelcomeMessage();
-
-                // 生成新的session_id，断开与 Coze 缓存会话的连接
-                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
                 addMessage('已开始新对话！有什么可以帮你的？', 'assistant');
             }
