@@ -473,44 +473,12 @@
             addMessage(text, 'user');
             showTypingIndicator();
 
-            // ✅ 关键修复：添加明确的类型标识，帮助 Agent 理解
-            let enhancedText = text;
-
-            // 检测职业类型
-            if (text.includes('企业主')) {
-                enhancedText = `[职业类型:企业主] ${text}`;
-            } else if (text.includes('自由职业者')) {
-                enhancedText = `[职业类型:自由职业者] ${text}`;
-            } else if (text.includes('工薪族')) {
-                enhancedText = `[职业类型:工薪族] ${text}`;
-            }
-
-            // 检测关键信息类型
-            if (/\d+岁/.test(text) || text.includes('年龄')) {
-                enhancedText = `[信息类型:年龄] ${enhancedText}`;
-            }
-            if (text.includes('公积金')) {
-                enhancedText = `[信息类型:公积金] ${enhancedText}`;
-            }
-            if (text.includes('社保')) {
-                enhancedText = `[信息类型:社保] ${enhancedText}`;
-            }
-            if (text.includes('工资') || text.includes('收入')) {
-                enhancedText = `[信息类型:收入] ${enhancedText}`;
-            }
-            if (text.includes('房') || text.includes('产')) {
-                enhancedText = `[信息类型:房产] ${enhancedText}`;
-            }
-            if (text.includes('车')) {
-                enhancedText = `[信息类型:车辆] ${enhancedText}`;
-            }
-            if (text.includes('负债')) {
-                enhancedText = `[信息类型:负债] ${enhancedText}`;
-            }
+            // ✅ 直接发送原始文本，不做任何增强
+            // 让 Agent 自己理解用户输入，避免标签干扰
+            const messageToSend = text;
 
             try {
-                console.log('发送请求:', text);
-                console.log('增强后:', enhancedText);
+                console.log('发送请求:', messageToSend);
 
                 const response = await fetchWithTimeout(API_URL, {
                     method: 'POST',
@@ -519,7 +487,7 @@
                         'x-run-id': sessionId
                     },
                     body: JSON.stringify({
-                        text: enhancedText
+                        text: messageToSend
                     })
                 }, REQUEST_TIMEOUT);
 
