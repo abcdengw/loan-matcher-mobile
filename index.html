@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>产品匹配官-老宁</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
             background-color: #f5f5f5;
@@ -14,6 +19,8 @@
             flex-direction: column;
             overflow: hidden;
         }
+
+        /* 顶部标题栏 */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -25,18 +32,24 @@
             align-items: center;
             gap: 10px;
         }
-        .header-content { flex: 1; }
+
+        .header-content {
+            flex: 1;
+        }
+
         .header h1 {
             font-size: 18px;
             font-weight: 600;
             text-align: center;
         }
+
         .header .subtitle {
             font-size: 12px;
             opacity: 0.9;
             text-align: center;
             margin-top: 5px;
         }
+
         .new-chat-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
@@ -51,25 +64,50 @@
             align-items: center;
             justify-content: center;
         }
-        .new-chat-btn:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(180deg); }
-        .new-chat-btn:active { transform: scale(0.9); }
+
+        .new-chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(180deg);
+        }
+
+        .new-chat-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 聊天消息区域 */
         .chat-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px 15px;
             scroll-behavior: smooth;
         }
+
+        /* 消息气泡样式 */
         .message {
             display: flex;
             margin-bottom: 15px;
             animation: fadeIn 0.3s ease;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .message.user { justify-content: flex-end; }
-        .message.assistant { justify-content: flex-start; }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
         .avatar {
             width: 40px;
             height: 40px;
@@ -80,14 +118,17 @@
             font-size: 18px;
             flex-shrink: 0;
         }
+
         .user .avatar {
             margin-left: 10px;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
+
         .assistant .avatar {
             margin-right: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
         .message-bubble {
             max-width: 75%;
             padding: 12px 16px;
@@ -96,17 +137,21 @@
             line-height: 1.6;
             word-wrap: break-word;
         }
+
         .user .message-bubble {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
+
         .assistant .message-bubble {
             background: white;
             color: #333;
             border-bottom-left-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
+
+        /* 输入区域 */
         .input-container {
             background: white;
             padding: 12px 15px;
@@ -116,6 +161,7 @@
             align-items: flex-end;
             gap: 10px;
         }
+
         .input-wrapper {
             flex: 1;
             background: #f5f5f5;
@@ -124,6 +170,7 @@
             display: flex;
             align-items: center;
         }
+
         #messageInput {
             flex: 1;
             border: none;
@@ -136,6 +183,7 @@
             padding: 4px 0;
             line-height: 1.5;
         }
+
         #sendButton {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -147,14 +195,28 @@
             transition: transform 0.2s, opacity 0.2s;
             flex-shrink: 0;
         }
-        #sendButton:hover { transform: scale(1.05); }
-        #sendButton:active { transform: scale(0.95); }
-        #sendButton:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        #sendButton:hover {
+            transform: scale(1.05);
+        }
+
+        #sendButton:active {
+            transform: scale(0.95);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 加载动画 */
         .typing-indicator {
             display: flex;
             gap: 4px;
             padding: 12px 16px;
         }
+
         .typing-indicator span {
             width: 8px;
             height: 8px;
@@ -162,12 +224,69 @@
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
         }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* 快捷提问按钮 */
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .quick-question {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-question:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* 错误提示 */
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 重试按钮 */
         .retry-btn {
             background: #667eea;
             color: white;
@@ -178,9 +297,20 @@
             margin-top: 5px;
             font-size: 12px;
         }
-        .retry-btn:hover { background: #5568d3; }
-        .chat-container::-webkit-scrollbar { width: 4px; }
-        .chat-container::-webkit-scrollbar-track { background: transparent; }
+
+        .retry-btn:hover {
+            background: #5568d3;
+        }
+
+        /* 滚动条美化 */
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
         .chat-container::-webkit-scrollbar-thumb {
             background: rgba(102, 126, 234, 0.3);
             border-radius: 2px;
@@ -195,18 +325,27 @@
             <div class="subtitle">我是老宁，帮你找到合适的贷款产品</div>
         </div>
     </div>
-    <div class="chat-container" id="chatContainer"></div>
+
+    <div class="chat-container" id="chatContainer">
+        <!-- 欢迎消息将通过JavaScript动态添加 -->
+    </div>
+
     <div class="input-container">
         <div class="input-wrapper">
-            <textarea id="messageInput" placeholder="输入你的情况..." rows="1" onkeydown="handleKeyDown(event)"></textarea>
+            <textarea
+                id="messageInput"
+                placeholder="输入你的情况..."
+                rows="1"
+                onkeydown="handleKeyDown(event)"
+            ></textarea>
         </div>
         <button id="sendButton" onclick="sendMessage()">发送</button>
     </div>
 
     <script>
-        // ✅ 最终修复版：添加明确的类型标识，帮助 Coze 理解
+        // ✅ 修复版：直接调用 Coze Code 部署 API
         const API_URL = 'https://d7920efe-dc9e-497e-86ff-b1f86511557e.dev.coze.site/run';
-        const REQUEST_TIMEOUT = 30000;
+        const REQUEST_TIMEOUT = 60000;
 
         let isTyping = false;
         let requestLock = false;
@@ -216,11 +355,13 @@
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
 
+        // 自动调整输入框高度
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight < 100 ? this.scrollHeight : 100) + 'px';
         });
 
+        // 处理回车发送
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -228,48 +369,64 @@
             }
         }
 
-        function addMessage(text, type) {
+        // 快捷提问
+        function sendQuickQuestion(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        // 添加消息到聊天界面
+        function addMessage(content, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
+
+            const avatar = type === 'assistant' ? '👨‍💼' : '👤';
+
             messageDiv.innerHTML = `
                 ${type === 'assistant' ? '<div class="avatar">👨‍💼</div>' : ''}
-                <div class="message-bubble">${text}</div>
+                <div class="message-bubble">${content}</div>
                 ${type === 'user' ? '<div class="avatar">👤</div>' : ''}
             `;
+
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
         }
 
+        // 显示打字指示器
         function showTypingIndicator() {
-            const indicatorDiv = document.createElement('div');
-            indicatorDiv.className = 'message assistant';
-            indicatorDiv.id = 'typingIndicator';
-            indicatorDiv.innerHTML = `
+            isTyping = true;
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant typing-message';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
                 <div class="avatar">👨‍💼</div>
                 <div class="message-bubble">
                     <div class="typing-indicator">
-                        <span></span><span></span><span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
                 </div>
             `;
-            chatContainer.appendChild(indicatorDiv);
+            chatContainer.appendChild(typingDiv);
             scrollToBottom();
         }
 
+        // 隐藏打字指示器
         function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
+            isTyping = false;
+            const typingMessage = document.getElementById('typingIndicator');
+            if (typingMessage) {
+                typingMessage.remove();
+            }
         }
 
+        // 滚动到底部
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function addWelcomeMessage() {
-            addMessage('你好！我是老宁 👋<br><br>我可以帮你：<br>✅ 匹配适合你的贷款产品<br>✅ 分析利率和费用<br>✅ 提供真实案例参考<br><br>请告诉我你的职业（工薪族/企业主/自由职业者）和其他情况，我来帮你找到最合适的产品！', 'assistant');
-        }
-
-        // ⚠️ 带超时的 fetch 请求
+        // 带超时的 fetch 请求
         async function fetchWithTimeout(url, options, timeout = REQUEST_TIMEOUT) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -287,10 +444,12 @@
             }
         }
 
+        // 发送消息
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text || isTyping) return;
 
+            // 请求锁：防止重复发送
             if (requestLock) {
                 console.log('请求正在进行中，忽略重复发送');
                 return;
@@ -309,7 +468,7 @@
             addMessage(text, 'user');
             showTypingIndicator();
 
-            // ⚠️ 关键修复：添加明确的类型标识，帮助 Coze 理解
+            // ✅ 关键修复：添加明确的类型标识，帮助 Agent 理解
             let enhancedText = text;
 
             // 检测职业类型
@@ -379,7 +538,9 @@
                 if (data.messages && data.messages.length > 0) {
                     const lastMessage = data.messages[data.messages.length - 1];
                     if (lastMessage.type === 'ai' && lastMessage.content) {
-                        addMessage(lastMessage.content, 'assistant');
+                        // 格式化Markdown内容
+                        const formattedContent = formatMarkdown(lastMessage.content);
+                        addMessage(formattedContent, 'assistant');
                     }
                 } else {
                     addMessage('抱歉，我暂时无法回复。请稍后再试。', 'assistant');
@@ -409,23 +570,86 @@
             }
         }
 
+        // 重试发送消息
         function retryMessage(text) {
+            // 移除错误消息
             const errorMessages = chatContainer.querySelectorAll('.message.assistant .message-bubble[style*="background: #fee"]');
-            errorMessages.forEach(msg => msg.closest('.message').remove());
+            errorMessages.forEach(msg => {
+                msg.closest('.message').remove();
+            });
+
+            // 重新发送消息
             messageInput.value = text;
             sendMessage();
         }
 
+        // 开始新对话
         function startNewChat() {
             if (confirm('确定要开始新对话吗？当前对话记录将被清除。')) {
+                // 清空聊天记录
                 chatContainer.innerHTML = '';
+
+                // 添加欢迎消息
                 addWelcomeMessage();
+
+                // 生成新的session_id，断开与 Coze 缓存会话的连接
                 sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+                addMessage('已开始新对话！有什么可以帮你的？', 'assistant');
             }
         }
 
-        // 初始化
-        addWelcomeMessage();
+        // 添加欢迎消息
+        function addWelcomeMessage() {
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.innerHTML = `
+                <div class="message assistant">
+                    <div class="avatar">👨‍💼</div>
+                    <div class="message-bubble">
+                        你好！我是老宁 🎯<br><br>
+                        我来帮你匹配合适的银行贷款产品。你可以告诉我你的情况，比如：<br><br>
+                        • 你是工薪族、企业主还是自由职业者？<br>
+                        • 年龄多少？<br>
+                        • 收入或年流水情况？<br>
+                        • 负债情况如何？<br><br>
+                        我会根据你的信息为你推荐最合适的产品！
+                    </div>
+                </div>
+
+                <div class="quick-questions">
+                    <button class="quick-question" onclick="sendQuickQuestion('工薪族')">我是工薪族</button>
+                    <button class="quick-question" onclick="sendQuickQuestion('企业主')">我是企业主</button>
+                    <button class="quick-question" onclick="sendQuickQuestion('自由职业者')">我是自由职业者</button>
+                </div>
+            `;
+            chatContainer.appendChild(welcomeDiv);
+            scrollToBottom();
+        }
+
+        // 格式化Markdown
+        function formatMarkdown(text) {
+            // 转换换行
+            let formatted = text.replace(/\n/g, '<br>');
+
+            // 转换加粗 **text**
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // 转换标题 ## text
+            formatted = formatted.replace(/^###\s+(.*)$/gm, '<h4>$1</h4>');
+
+            // 转换列表项 - text
+            formatted = formatted.replace(/^-\s+(.*)$/gm, '• $1');
+
+            // 转换引用 > text
+            formatted = formatted.replace(/^>\s+(.*)$/gm, '<em>$1</em>');
+
+            return formatted;
+        }
+
+        // 页面加载完成后添加欢迎消息
+        window.addEventListener('load', () => {
+            addWelcomeMessage();
+        });
     </script>
 </body>
 </html>
