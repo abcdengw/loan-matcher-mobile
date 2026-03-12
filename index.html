@@ -371,6 +371,11 @@
 
         // 快捷提问
         function sendQuickQuestion(text) {
+            // 检查是否正在请求中
+            if (requestLock || isTyping) {
+                console.log('请求正在进行中，忽略快捷提问');
+                return;
+            }
             messageInput.value = text;
             sendMessage();
         }
